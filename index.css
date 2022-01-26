@@ -1,0 +1,23 @@
+* {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
+}
+
+#canvas-container {
+    width: 70vw;
+    height: 100vh;
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    align-items: center;
+}
+
+#game {
+    width: 1000px;
+    height: 600px;
+    background-color: wheat;
+}
