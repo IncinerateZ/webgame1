@@ -28,7 +28,6 @@ class Game {
 
             //move player
             this.player.moveTo({ x: x, y: y });
-            this.player.rotateTo({ rad: Math.PI });
         });
 
         //canvas context
