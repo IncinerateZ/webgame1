@@ -38,7 +38,7 @@ class Game {
         this.hcanvas.height = this.canvas.height;
         this.hcanvas.setAttribute(
             'style',
-            'background-color: gray; opacity: 0; position: absolute',
+            'background-color: gray; opacity: 0.1; position: absolute',
         );
 
         this.hc = new HitCanvas(this.hcanvas);
@@ -74,6 +74,8 @@ class Game {
             right_wallImg: null,
             drawMesh: true,
             hc: this.hc,
+            name: 'world1',
+            floorName: 'floor_clay',
         });
 
         this.world = w1;
