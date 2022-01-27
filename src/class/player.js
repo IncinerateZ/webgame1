@@ -1,4 +1,6 @@
-export default class Player {
+import Entity from './Entity.js';
+
+export default class Player extends Entity {
     constructor({
         img = null,
         x = 0,
@@ -9,54 +11,26 @@ export default class Player {
         displayName = '',
         scale = 1,
         rotationRad = 0,
+        facingOrigin = true,
+        hc = null,
     }) {
-        this.data = {
+        super({
             img: img,
             x: x,
             y: y,
             z: z,
             speed_x: speed_x,
             speed_y: speed_y,
-            displayName: displayName,
             scale: scale,
             rotationRad: rotationRad,
-        };
-
-        this.data.img.onload = () => {
-            this.imgLoad();
-        };
-    }
-
-    render(ctx) {
-        ctx.save();
-        ctx.translate(this.getCenter().x, this.getCenter().y);
-        ctx.rotate(this.data.rotationRad);
-        ctx.drawImage(
-            this.data.img,
-            -this.getRelativeCenter().x,
-            -this.getRelativeCenter().y,
-            this.data.img.width * this.data.scale,
-            this.data.img.height * this.data.scale,
-        );
-        ctx.translate(0, 0);
-        ctx.restore();
-    }
-
-    getRelativeCenter() {
-        return { x: this.data.width / 2, y: this.data.height / 2 };
-    }
-
-    //absolute center
-    getCenter() {
-        let rel = this.getRelativeCenter();
-        return { x: this.data.x + rel.x, y: this.data.y + rel.y };
+            displayName: displayName,
+            facingOrigin: facingOrigin,
+            hc: hc,
+        });
     }
 
     imgLoad() {
-        let playerdat = this.data;
-        let playerImg = this.data.img;
-        playerdat.width = playerImg.width;
-        playerdat.height = playerImg.height;
+        super.imgLoad();
         this.setScale(0.5);
     }
 
@@ -67,6 +41,7 @@ export default class Player {
         let interval = setInterval(() => {
             let dX = x - this.data.x;
             let dY = y - this.data.y;
+            this.data.facingOrigin = dX > 0 ? true : false;
 
             let cX =
                 Math.abs(dX) >= this.data.speed_x
@@ -84,8 +59,6 @@ export default class Player {
                 cX = dX;
                 cY = dY;
                 clearInterval(interval);
-                console.log('finished moving');
-                console.log(`x:${this.data.x} y:${this.data.y}`);
             }
 
             this.data.x += cX;
@@ -107,11 +80,5 @@ export default class Player {
             this.data.rotationRad += 0.01;
             this.data.rotationRad = this.data.rotationRad % (2 * Math.PI);
         }, 15);
-    }
-
-    setScale(scale) {
-        this.data.scale = scale;
-        this.data.width = this.data.img.width * scale;
-        this.data.height = this.data.img.height * scale;
     }
 }
