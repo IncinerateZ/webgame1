@@ -91,17 +91,17 @@ export class World {
         if (this.floorImg)
             this.floorImg.onload = () => {
                 this.floorLoaded = true;
-                console.log(`${this.name} floor rendered`);
+                console.log(`${this.name} floor loaded`);
             };
         if (this.left_wallImg)
             this.left_wallImg.onload = () => {
                 this.left_wallLoaded = true;
-                console.log(`${this.name} left_wall rendered`);
+                console.log(`${this.name} left_wall loaded`);
             };
         if (this.right_wallImg)
             this.right_wallImg.onload = () => {
                 this.right_wallLoaded = true;
-                console.log(`${this.name} right_wall rendered`);
+                console.log(`${this.name} right_wall loaded`);
             };
     }
 
@@ -138,6 +138,7 @@ export class World {
         let o = { ...this.origin };
 
         //draw textures
+        //  floor
         if (this.floorLoaded) {
             ctx.save();
             ctx.translate(this.origin.x, this.origin.y);
@@ -151,6 +152,41 @@ export class World {
             );
             ctx.restore();
         }
+
+        //  left wall
+        if (this.left_wallLoaded) {
+            ctx.save();
+            ctx.translate(this.origin.x, this.origin.y);
+            let wp = World.dX * this.length;
+            ctx.drawImage(
+                this.left_wallImg,
+                -World.dX * this.width,
+                -World.dY * this.length * 2,
+                wp,
+                1.732 * wp,
+                // 2 * World.dY * this.height +
+                //     wp * Math.tan((30 * Math.PI) / 180),
+            );
+            ctx.restore();
+        }
+
+        //  right wall
+        if (this.right_wallLoaded) {
+            ctx.save();
+            ctx.translate(this.origin.x, this.origin.y);
+            let wp = World.dX * this.length;
+            ctx.drawImage(
+                this.right_wallImg,
+                -1,
+                -2 * World.dY * World._length,
+                wp,
+                1.732 * wp,
+                // 2 * World.dY * this.height +
+                //     wp * Math.tan((30 * Math.PI) / 180),
+            );
+            ctx.restore();
+        }
+
         //draw floor cells
         let l = 0;
         for (let w = 0; w < this.length; w++) {

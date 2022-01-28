@@ -52,7 +52,6 @@ class Game {
             if (region) {
                 if (region.data.type === 'world-surface') {
                     //move player
-                    //console.log(region.data);
                     this.player.moveTo(region.data.center);
                 }
             }
@@ -61,10 +60,6 @@ class Game {
         //render to page
         this.container.appendChild(this.canvas);
         this.container.appendChild(this.hcanvas);
-
-        //load player
-        const playerImg = document.createElement('img');
-        playerImg.setAttribute('src', `${assetsPath}/entities/player.png`);
 
         const w1 = new World({
             width: 9,
@@ -77,6 +72,8 @@ class Game {
             hc: this.hc,
             name: 'world1',
             floorName: 'floor_clay',
+            left_wallName: 'wall_left_short_cream',
+            right_wallName: 'wall_right_short_cream',
         });
 
         this.world = w1;
@@ -86,14 +83,14 @@ class Game {
             y: 250,
             z: 1,
             displayName: 'IncinerateZ',
-            speed_x: 7,
-            speed_y: 7,
+            speed_x: 4,
+            speed_y: 4,
             facingOrigin: false,
-            imgName: 'player3',
+            imgName: 'player',
         });
 
         const player2 = new Player({
-            imgName: 'player3',
+            imgName: 'player',
             x: 550,
             y: 250,
             z: 1,
