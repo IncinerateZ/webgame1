@@ -12,6 +12,7 @@ export class World {
     static normalLength = 0;
     static normalHeight = 0;
     static blockSize = 45;
+    static entrance = { i: 0, j: 0, k: 0 };
     constructor({
         width,
         length,
@@ -22,10 +23,12 @@ export class World {
         drawMesh = false,
         hc = null,
         name = '',
+        entrance = { i: 0, j: 0, k: 0 },
     }) {
         this.width = width;
         this.length = length;
         this.height = height;
+        this.entrance = entrance;
 
         World.dX = 1 * (1 * blockSize * Math.cos(30 * (Math.PI / 180)));
         World.dY = 1 * (1 * blockSize * Math.sin(30 * (Math.PI / 180)));
@@ -36,6 +39,8 @@ export class World {
 
         World.normalLength = (World._length + World.width) * World.dY;
         World.normalHeight = (World._length + World.width) * World.dX;
+
+        World.entrance = entrance;
 
         this.name = name;
 

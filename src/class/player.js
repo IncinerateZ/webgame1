@@ -37,7 +37,13 @@ export default class Player extends Entity {
     imgLoad() {
         super.imgLoad();
         this.setScale(1);
-        this.moveToBlock({ i: 5, j: 7, k: 0 });
+        this.forceTeleport(World.entrance);
+    }
+
+    forceTeleport({ i = 0, j = 0, k = 0 }) {
+        let loc = World.getBlockCenter({ i: i, j: j, k: k });
+        this.data.x = loc.x;
+        this.data.y = loc.y;
     }
 
     async moveToBlock({ i = 0, j = 0, k = 0 }) {

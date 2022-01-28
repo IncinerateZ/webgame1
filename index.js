@@ -68,12 +68,13 @@ class Game {
             floorImg: null,
             left_wallImg: null,
             right_wallImg: null,
-            drawMesh: !true,
+            drawMesh: true,
             hc: this.hc,
             name: 'world1',
             floorName: 'floor_clay',
             left_wallName: 'wall_left_short_cream',
             right_wallName: 'wall_right_short_cream',
+            entrance: { i: 6, j: 0, k: 0 },
         });
 
         this.world = w1;
