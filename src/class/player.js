@@ -1,8 +1,12 @@
+const assetsPath = './src/assets';
+
 import Entity from './Entity.js';
+import animations from '../assets/animations/player.js';
+import { World } from './World.js';
 
 export default class Player extends Entity {
     constructor({
-        img = null,
+        imgName = null,
         x = 0,
         y = 0,
         z = 0,
@@ -15,7 +19,7 @@ export default class Player extends Entity {
         hc = null,
     }) {
         super({
-            img: img,
+            imgName: imgName,
             x: x,
             y: y,
             z: z,
@@ -26,12 +30,18 @@ export default class Player extends Entity {
             displayName: displayName,
             facingOrigin: facingOrigin,
             hc: hc,
+            animations: animations,
         });
     }
 
     imgLoad() {
         super.imgLoad();
         this.setScale(0.5);
+        this.moveToBlock({ i: 5, j: 7, k: 0 });
+    }
+
+    async moveToBlock({ i = 0, j = 0, k = 0 }) {
+        this.moveTo(World.getBlockCenter({ i: i, j: j, k: k }));
     }
 
     async moveTo({ x = 0, y = 0 }) {
@@ -59,12 +69,42 @@ export default class Player extends Entity {
                 cX = dX;
                 cY = dY;
                 clearInterval(interval);
+                this.playAnimation('blink');
             }
 
             this.data.x += cX;
             this.data.y += cY;
         }, 15);
         this.data.movingTo = interval;
+    }
+
+    playAnimation(animation = '') {
+        if (
+            !this.data.animations[animation] ||
+            this.data.animations[animation].length === 0
+        )
+            return;
+        if (this.data.runningAnimation.length > 0) {
+            for (let i of this.data.runningAnimation) {
+                clearTimeout(i);
+            }
+            this.data.runningAnimation = [];
+        }
+        let keyframes = this.data.animations[animation];
+        for (let k = 0; k < keyframes.length; k++) {
+            this.data.runningAnimation.push(
+                setTimeout(() => {
+                    this.data.frame_i = keyframes[k].frame.x;
+                    this.data.frame_j = keyframes[k].frame.y;
+                    if (k === keyframes.length - 1) {
+                        this.data.runningAnimation = [];
+                        this.data.frame_i = 0;
+                        this.data.frame_j = 0;
+                        console.log('finished animating');
+                    }
+                }, keyframes[k].timeOffset),
+            );
+        }
     }
 
     async rotateTo({ rad = 0 }) {

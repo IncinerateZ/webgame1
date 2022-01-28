@@ -1,6 +1,10 @@
+import { World } from './World.js';
+
+const assetsPath = './src/assets';
+
 export default class Entity {
     constructor({
-        img = null,
+        imgName = null,
         x = 0,
         y = 0,
         z = 0,
@@ -11,9 +15,12 @@ export default class Entity {
         displayName = '',
         facingOrigin = true,
         hc = null,
+        animations = {},
     }) {
         this.data = {
-            img: img,
+            img: null,
+            imgName: imgName,
+            imgLoaded: false,
             x: x,
             y: y,
             z: z,
@@ -24,12 +31,26 @@ export default class Entity {
             displayName: displayName,
             facingOrigin: facingOrigin,
             hc: hc,
+            animations: animations,
+            runningAnimation: [],
+            frame_i: 0,
+            frame_j: 0,
         };
 
-        this.data.img.onload = () => {
-            console.log(`${this.data.displayName} img load`);
-            this.imgLoad();
-        };
+        if (this.data.imgName) {
+            this.data.img = document.createElement('img');
+            this.data.img.setAttribute(
+                'src',
+                `${assetsPath}/entities/${imgName}.png`,
+            );
+        }
+
+        if (this.data.img)
+            this.data.img.onload = () => {
+                console.log(`${this.data.displayName} img load`);
+                this.data.imgLoaded = true;
+                this.imgLoad();
+            };
     }
 
     render({ ctx = null }) {
@@ -37,13 +58,28 @@ export default class Entity {
         ctx.translate(this.getCenter().x, this.getCenter().y);
         ctx.rotate(this.data.rotationRad);
         if (!this.data.facingOrigin) ctx.scale(-1, 1);
+
+        //if (this.data.displayName === 'inferious77') {
         ctx.drawImage(
             this.data.img,
-            -this.getRelativeCenter().x,
+            (this.data.frame_i * this.data.img.width) / 3,
+            this.data.frame_j / 3,
+            this.data.img.width / 3,
+            this.data.img.height,
+            -this.getRelativeCenter().x / 3,
             -this.getRelativeCenter().y,
-            this.data.img.width * this.data.scale,
+            (this.data.img.width * this.data.scale) / 3,
             this.data.img.height * this.data.scale,
         );
+        // } else {
+        //     ctx.drawImage(
+        //         this.data.img,
+        //         -this.getRelativeCenter().x,
+        //         -this.getRelativeCenter().y,
+        //         this.data.img.width * this.data.scale,
+        //         this.data.img.height * this.data.scale,
+        //     );
+        // }
         ctx.translate(0, 0);
         ctx.restore();
     }
@@ -53,7 +89,6 @@ export default class Entity {
         let img = this.data.img;
         dat.width = img.width;
         dat.height = img.height;
-        if (this.data.displayName === 'arrow') console.log('arrow load');
     }
 
     setScale(scale) {

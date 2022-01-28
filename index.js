@@ -38,7 +38,7 @@ class Game {
         this.hcanvas.height = this.canvas.height;
         this.hcanvas.setAttribute(
             'style',
-            'background-color: gray; opacity: 0.1; position: absolute',
+            'background-color: gray; opacity: 0; position: absolute',
         );
 
         this.hc = new HitCanvas(this.hcanvas);
@@ -66,8 +66,8 @@ class Game {
         playerImg.setAttribute('src', `${assetsPath}/entities/player.png`);
 
         const w1 = new World({
-            width: 8,
-            length: 8,
+            width: 9,
+            length: 9,
             height: 10,
             floorImg: null,
             left_wallImg: null,
@@ -81,7 +81,7 @@ class Game {
         this.world = w1;
 
         const player = new Player({
-            img: playerImg,
+            //img: playerImg,
             x: 450,
             y: 250,
             z: 1,
@@ -89,17 +89,19 @@ class Game {
             speed_x: 7,
             speed_y: 7,
             facingOrigin: false,
+            imgName: 'player2',
         });
 
         const player2 = new Player({
-            img: playerImg.cloneNode(),
-            x: 450,
+            //img: playerImg.cloneNode(),
+            imgName: 'player2',
+            x: 550,
             y: 250,
             z: 1,
             displayName: 'inferious77',
             speed_x: 7,
             speed_y: 7,
-            facingOrigin: false,
+            facingOrigin: true,
         });
 
         this.player = player;

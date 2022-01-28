@@ -3,6 +3,14 @@ const blockSize = 45;
 const assetsPath = './src/assets';
 
 export class World {
+    static dX = 0;
+    static dY = 0;
+    static origin = null;
+    static width = 0;
+    static _length = 0;
+    static height = 0;
+    static normalLength = 0;
+    static normalHeight = 0;
     constructor({
         width,
         length,
@@ -17,6 +25,17 @@ export class World {
         this.width = width;
         this.length = length;
         this.height = height;
+
+        World.dX = 1 * (1 * blockSize * Math.cos(30 * (Math.PI / 180)));
+        World.dY = 1 * (1 * blockSize * Math.sin(30 * (Math.PI / 180)));
+
+        World.width = width;
+        World.height = height;
+        World._length = length;
+
+        World.normalLength = (World._length + World.width) * World.dY;
+        World.normalHeight = (World._length + World.width) * World.dX;
+
         this.name = name;
 
         this.floorImg = floorName ? document.createElement('img') : null;
@@ -62,6 +81,11 @@ export class World {
             }
         }
 
+        this.origin = {
+            x: 0,
+            y: 0,
+        };
+
         //on texture load
         if (this.floorImg)
             this.floorImg.onload = () => {
@@ -80,19 +104,51 @@ export class World {
             };
     }
 
+    static getBlockCenter({ i = 0, j = 0, k = 0 }) {
+        if (
+            i > World._length - 1 ||
+            j > World.width - 1 ||
+            k > World.height - 1 ||
+            i < 0 ||
+            j < 0 ||
+            k < 0
+        )
+            return this.getBlockCenter({});
+        let p = { ...this.origin };
+        //traverse length
+        p.x = p.x + i * World.dX;
+        p.y = p.y + i * World.dY;
+        //traverse width
+        p.x = p.x - j * World.dX;
+        p.y = p.y + j * World.dY;
+
+        //add dY
+        p.y = p.y + World.dY;
+
+        return p;
+    }
+
     render({ ctx = null, cameraOffsetX = 0, cameraOffsetY = 0 }) {
         console.log(`${this.name} render`);
-        let origin = {
+        this.origin = {
             x: ctx.width / 2,
             y: ctx.height / 3 - blockSize / 2,
         };
 
+        let o = { ...this.origin };
+
         //draw textures
         if (this.floorLoaded) {
             ctx.save();
-            ctx.translate(origin.x, origin.y);
+            ctx.translate(this.origin.x, this.origin.y);
             ctx.rotate((90 * Math.PI) / 180);
-            ctx.drawImage(this.floorImg, /*230*/ -2, -this.floorImg.height / 2);
+            ctx.drawImage(
+                this.floorImg,
+                0,
+                -World.normalHeight / 2,
+                World.dY * (this.length + this.width),
+                World.dX * (this.width + this.length),
+            );
             ctx.restore();
         }
         //draw floor cells
@@ -103,10 +159,14 @@ export class World {
                 let dX = 1 * (1 * blockSize * Math.cos(30 * (Math.PI / 180)));
                 let dY = 1 * (1 * blockSize * Math.sin(30 * (Math.PI / 180)));
 
-                let x1 =
-                    origin.x + l * blockSize * Math.cos(30 * (Math.PI / 180));
-                let y1 =
-                    origin.y + l * blockSize * Math.sin(30 * (Math.PI / 180));
+                if (w === 0 && l === 0) {
+                    World.dX = dX;
+                    World.dY = dY;
+                    World.origin = this.origin;
+                }
+
+                let x1 = o.x + l * blockSize * Math.cos(30 * (Math.PI / 180));
+                let y1 = o.y + l * blockSize * Math.sin(30 * (Math.PI / 180));
 
                 //top
                 if (this.drawMesh) {
@@ -139,10 +199,8 @@ export class World {
                     type: 'world-surface',
                 });
             }
-            origin.x =
-                origin.x - 1 * (1 * blockSize * Math.cos(30 * (Math.PI / 180)));
-            origin.y =
-                origin.y + 1 * (1 * blockSize * Math.sin(30 * (Math.PI / 180)));
+            o.x = o.x - 1 * (1 * blockSize * Math.cos(30 * (Math.PI / 180)));
+            o.y = o.y + 1 * (1 * blockSize * Math.sin(30 * (Math.PI / 180)));
         }
     }
 }
