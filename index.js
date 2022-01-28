@@ -52,6 +52,7 @@ class Game {
             if (region) {
                 if (region.data.type === 'world-surface') {
                     //move player
+                    //console.log(region.data);
                     this.player.moveTo(region.data.center);
                 }
             }
@@ -72,7 +73,7 @@ class Game {
             floorImg: null,
             left_wallImg: null,
             right_wallImg: null,
-            drawMesh: true,
+            drawMesh: !true,
             hc: this.hc,
             name: 'world1',
             floorName: 'floor_clay',
@@ -81,7 +82,6 @@ class Game {
         this.world = w1;
 
         const player = new Player({
-            //img: playerImg,
             x: 450,
             y: 250,
             z: 1,
@@ -89,12 +89,11 @@ class Game {
             speed_x: 7,
             speed_y: 7,
             facingOrigin: false,
-            imgName: 'player2',
+            imgName: 'player3',
         });
 
         const player2 = new Player({
-            //img: playerImg.cloneNode(),
-            imgName: 'player2',
+            imgName: 'player3',
             x: 550,
             y: 250,
             z: 1,

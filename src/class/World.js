@@ -11,6 +11,7 @@ export class World {
     static height = 0;
     static normalLength = 0;
     static normalHeight = 0;
+    static blockSize = 45;
     constructor({
         width,
         length,
@@ -129,7 +130,6 @@ export class World {
     }
 
     render({ ctx = null, cameraOffsetX = 0, cameraOffsetY = 0 }) {
-        console.log(`${this.name} render`);
         this.origin = {
             x: ctx.width / 2,
             y: ctx.height / 3 - blockSize / 2,
@@ -193,7 +193,6 @@ export class World {
                     { x: x1, y: y1 + dY * 2 }, //bottom
                     { x: x1 - dX, y: y1 + dY }, //left
                 ];
-                //console.log(l + ' ' + w);
                 this.hc.createRegion(`${l}-${w}`, paths, {
                     center: { x: x1, y: y1 + dY },
                     type: 'world-surface',

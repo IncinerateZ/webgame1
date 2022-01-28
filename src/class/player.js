@@ -36,7 +36,7 @@ export default class Player extends Entity {
 
     imgLoad() {
         super.imgLoad();
-        this.setScale(0.5);
+        this.setScale(1);
         this.moveToBlock({ i: 5, j: 7, k: 0 });
     }
 
@@ -46,8 +46,6 @@ export default class Player extends Entity {
 
     async moveTo({ x = 0, y = 0 }) {
         clearInterval(this.data.movingTo);
-        x -= this.data.width / 2;
-        y -= this.data.height;
         let interval = setInterval(() => {
             let dX = x - this.data.x;
             let dY = y - this.data.y;
@@ -100,7 +98,6 @@ export default class Player extends Entity {
                         this.data.runningAnimation = [];
                         this.data.frame_i = 0;
                         this.data.frame_j = 0;
-                        console.log('finished animating');
                     }
                 }, keyframes[k].timeOffset),
             );
@@ -113,7 +110,6 @@ export default class Player extends Entity {
                 rad - 0.01 <= this.data.rotationRad &&
                 this.data.rotationRad <= rad + 0.01
             ) {
-                console.log('finished rotating');
                 clearInterval(interval);
                 return;
             }

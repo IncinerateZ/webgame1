@@ -54,32 +54,24 @@ export default class Entity {
     }
 
     render({ ctx = null }) {
+        let frameSize = this.data.animations._dat.frameSize;
+        let entitySize = this.data.animations._dat.entity;
         ctx.save();
-        ctx.translate(this.getCenter().x, this.getCenter().y);
+        ctx.translate(this.data.x, this.data.y);
         ctx.rotate(this.data.rotationRad);
         if (!this.data.facingOrigin) ctx.scale(-1, 1);
-
-        //if (this.data.displayName === 'inferious77') {
+        let r = (this.data.scale * (World.dY * 6)) / frameSize.height;
         ctx.drawImage(
             this.data.img,
-            (this.data.frame_i * this.data.img.width) / 3,
-            this.data.frame_j / 3,
-            this.data.img.width / 3,
-            this.data.img.height,
-            -this.getRelativeCenter().x / 3,
-            -this.getRelativeCenter().y,
-            (this.data.img.width * this.data.scale) / 3,
-            this.data.img.height * this.data.scale,
+            this.data.frame_i * frameSize.width,
+            this.data.frame_j * frameSize.height,
+            frameSize.width,
+            frameSize.height,
+            (-frameSize.width * r) / 2,
+            entitySize.dYBottom * r - r * frameSize.height,
+            frameSize.width * r,
+            this.data.scale * World.dY * 6,
         );
-        // } else {
-        //     ctx.drawImage(
-        //         this.data.img,
-        //         -this.getRelativeCenter().x,
-        //         -this.getRelativeCenter().y,
-        //         this.data.img.width * this.data.scale,
-        //         this.data.img.height * this.data.scale,
-        //     );
-        // }
         ctx.translate(0, 0);
         ctx.restore();
     }
@@ -93,8 +85,8 @@ export default class Entity {
 
     setScale(scale) {
         this.data.scale = scale;
-        this.data.width = this.data.img.width * scale;
-        this.data.height = this.data.img.height * scale;
+        this.data.width = this.data.animations._dat.frameSize.width * scale;
+        this.data.height = this.data.animations._dat.frameSize.height * scale;
     }
 
     getRelativeCenter() {
