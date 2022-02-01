@@ -102,8 +102,6 @@ export default class Player extends Entity {
             } else {
                 if (v !== null) {
                     imgPath = `${assetsPath}/entities/player/${k}/${v}.svg`;
-                    if (k === 'eyes')
-                        imgPath = `${assetsPath}/entities/player/${k}/${v}.svg`;
                     count++;
 
                     //init image
