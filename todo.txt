@@ -1,3 +1,4 @@
+player rendering and animation
 split world textures into sizes
 proper pathing
 world building

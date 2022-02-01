@@ -2,6 +2,7 @@ import Entity from './src/class/Entity.js';
 import Player from './src/class/player.js';
 import { World } from './src/class/World.js';
 import { HitCanvas } from './src/class/HitCanvas.js';
+import OStore from './src/class/OStore.js';
 
 const assetsPath = './src/assets';
 
@@ -18,14 +19,18 @@ function getCursorPosition(canvas, e) {
     return { x: x, y: y };
 }
 
+//Game class
 class Game {
     constructor({ id }) {
         //create display canvas
+        this.ostore = new OStore();
         this.container = document.getElementById(id);
         this.canvas = document.createElement('canvas');
         this.canvas.setAttribute('id', 'game');
         this.canvas.width = 1000;
         this.canvas.height = 600;
+
+        this.ostore.setCanvas(this.canvas);
 
         this.ctx = this.canvas.getContext('2d');
         this.ctx.width = 1000;
@@ -57,6 +62,8 @@ class Game {
             }
         });
 
+        this.ostore.setHitCanvas(this.hc);
+
         //render to page
         this.container.appendChild(this.canvas);
         this.container.appendChild(this.hcanvas);
@@ -75,9 +82,11 @@ class Game {
             left_wallName: 'wall_left_short_cream',
             right_wallName: 'wall_right_short_cream',
             entrance: { i: 6, j: 0, k: 0 },
+            ostore: this.ostore,
         });
 
         this.world = w1;
+        this.ostore.setWorld(this.world);
 
         const player = new Player({
             x: 450,
@@ -88,25 +97,27 @@ class Game {
             speed_y: 4,
             facingOrigin: false,
             imgName: 'player',
+            ostore: this.ostore,
         });
 
-        const player2 = new Player({
-            imgName: 'player',
-            x: 550,
-            y: 250,
-            z: 1,
-            displayName: 'inferious77',
-            speed_x: 7,
-            speed_y: 7,
-            facingOrigin: true,
-        });
+        // const player2 = new Player({
+        //     imgName: 'player',
+        //     x: 550,
+        //     y: 250,
+        //     z: 1,
+        //     displayName: 'inferious77',
+        //     speed_x: 7,
+        //     speed_y: 7,
+        //     facingOrigin: true,
+        // });
 
         this.player = player;
         this.cameraOffsetX = 0;
         this.cameraOffsetY = 0;
 
+        this.ostore.setPlayer(this.player);
         //render queue
-        this.renderQueue = [this.world, player2, this.player];
+        this.renderQueue = [this.world /*player2*/, this.player];
     }
 
     render() {

@@ -6,7 +6,6 @@ import { World } from './World.js';
 
 export default class Player extends Entity {
     constructor({
-        imgName = null,
         x = 0,
         y = 0,
         z = 0,
@@ -17,9 +16,25 @@ export default class Player extends Entity {
         rotationRad = 0,
         facingOrigin = true,
         hc = null,
+        images = {
+            arms: {
+                left: 'basic',
+                right: 'basic',
+            },
+            body: 'basic',
+            eyes: 'basic',
+            hairs: 'basic',
+            head: 'basic',
+            legs: {
+                left: 'basic',
+                right: 'basic',
+            },
+            mouths: 'basic',
+            nose: 'basic',
+        },
+        ostore = null,
     }) {
         super({
-            imgName: imgName,
             x: x,
             y: y,
             z: z,
@@ -29,25 +44,110 @@ export default class Player extends Entity {
             rotationRad: rotationRad,
             displayName: displayName,
             facingOrigin: facingOrigin,
-            hc: hc,
+            hc: hc, //hitcanvas
             animations: animations,
+            ostore: ostore,
         });
+
+        this.data.appearances = images;
+        this.data.images = {
+            arms: {
+                left: null,
+                right: null,
+            },
+            body: null,
+            eyes: null,
+            hairs: null,
+            head: null,
+            legs: {
+                left: null,
+                right: null,
+            },
+            mouths: null,
+            nose: null,
+        };
+        this.data.toRenderCount = Number.MAX_SAFE_INTEGER;
+        this.data.imageLoadAttempts = -1;
+        this.data.tryLoadImages = null;
+        this.attemptLoadImages();
     }
 
-    imgLoad() {
-        super.imgLoad();
+    imgLoad(images) {
+        let count = 0;
+        for (let k of Object.keys(images)) {
+            let v = images[k];
+            let imgPath = '';
+            if (typeof v === 'object' && !Array.isArray(v) && v !== null) {
+                for (let k2 of Object.keys(v)) {
+                    if (v[k2] !== null) {
+                        imgPath = `${assetsPath}/entities/player/${k}/${k2}/${v[k2]}.png`;
+                        count++;
+
+                        //init image
+                        let e = document.createElement('img');
+                        e.setAttribute('src', imgPath);
+                        e.onload = () => this.data.toRenderCount--;
+                        this.data.images[k][k2] = e;
+                    }
+                }
+            } else {
+                if (v !== null) {
+                    imgPath = `${assetsPath}/entities/player/${k}/${v}.png`;
+                    count++;
+
+                    //init image
+                    let e = document.createElement('img');
+                    e.setAttribute('src', imgPath);
+                    e.onload = () => this.data.toRenderCount--;
+                    this.data.images[k] = e;
+                }
+            }
+        }
+        this.data.toRenderCount = count;
+
         this.setScale(1);
-        this.forceTeleport(World.entrance);
+
+        let t = setInterval(() => {
+            if (this.ostore.world.origin) {
+                clearInterval(t);
+                return this.forceTeleport(this.ostore.world.entrance);
+            }
+        }, 100);
+    }
+
+    attemptLoadImages() {
+        if (this.data.imageLoadAttempts < 3 && !this.data.tryLoadImages) {
+            if (this.data.imageLoadAttempts !== -1) {
+                console.log(
+                    `Missing ${this.data.toRenderCount} textures from ${this.data.displayName}`,
+                );
+            }
+            this.imgLoad(this.data.appearances);
+            this.data.imageLoadAttempts++;
+            this.data.tryLoadImages = setTimeout(() => {
+                this.data.tryLoadImages = null;
+            }, 3000);
+        }
+    }
+
+    render({ ctx = null }) {
+        if (this.data.toRenderCount > 0) {
+            return this.attemptLoadImages();
+        }
+        ctx.arc(this.data.x, this.data.y, 5, 0, 2 * Math.PI);
+        ctx.fillStyle = '#00ff00';
+        ctx.fill();
+        ctx.stroke();
     }
 
     forceTeleport({ i = 0, j = 0, k = 0 }) {
-        let loc = World.getBlockCenter({ i: i, j: j, k: k });
+        let loc = this.ostore.world.getBlockCenter({ i: i, j: j, k: k });
         this.data.x = loc.x;
         this.data.y = loc.y;
     }
 
     async moveToBlock({ i = 0, j = 0, k = 0 }) {
-        this.moveTo(World.getBlockCenter({ i: i, j: j, k: k }));
+        this.moveTo(this.ostore.world.getBlockCenter({ i: i, j: j, k: k }));
     }
 
     async moveTo({ x = 0, y = 0 }) {
@@ -73,7 +173,6 @@ export default class Player extends Entity {
                 cX = dX;
                 cY = dY;
                 clearInterval(interval);
-                this.playAnimation('blink');
             }
 
             this.data.x += cX;
@@ -82,33 +181,7 @@ export default class Player extends Entity {
         this.data.movingTo = interval;
     }
 
-    playAnimation(animation = '') {
-        if (
-            !this.data.animations[animation] ||
-            this.data.animations[animation].length === 0
-        )
-            return;
-        if (this.data.runningAnimation.length > 0) {
-            for (let i of this.data.runningAnimation) {
-                clearTimeout(i);
-            }
-            this.data.runningAnimation = [];
-        }
-        let keyframes = this.data.animations[animation];
-        for (let k = 0; k < keyframes.length; k++) {
-            this.data.runningAnimation.push(
-                setTimeout(() => {
-                    this.data.frame_i = keyframes[k].frame.x;
-                    this.data.frame_j = keyframes[k].frame.y;
-                    if (k === keyframes.length - 1) {
-                        this.data.runningAnimation = [];
-                        this.data.frame_i = 0;
-                        this.data.frame_j = 0;
-                    }
-                }, keyframes[k].timeOffset),
-            );
-        }
-    }
+    playAnimation(animation = '') {}
 
     async rotateTo({ rad = 0 }) {
         let interval = setInterval(() => {

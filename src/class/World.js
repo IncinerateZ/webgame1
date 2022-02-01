@@ -3,16 +3,6 @@ const blockSize = 45;
 const assetsPath = './src/assets';
 
 export class World {
-    static dX = 0;
-    static dY = 0;
-    static origin = null;
-    static width = 0;
-    static _length = 0;
-    static height = 0;
-    static normalLength = 0;
-    static normalHeight = 0;
-    static blockSize = 45;
-    static entrance = { i: 0, j: 0, k: 0 };
     constructor({
         width,
         length,
@@ -24,23 +14,25 @@ export class World {
         hc = null,
         name = '',
         entrance = { i: 0, j: 0, k: 0 },
+        ostore = null,
     }) {
+        this.ostore = ostore;
         this.width = width;
         this.length = length;
         this.height = height;
         this.entrance = entrance;
 
-        World.dX = 1 * (1 * blockSize * Math.cos(30 * (Math.PI / 180)));
-        World.dY = 1 * (1 * blockSize * Math.sin(30 * (Math.PI / 180)));
+        this.dX = 1 * (1 * blockSize * Math.cos(30 * (Math.PI / 180)));
+        this.dY = 1 * (1 * blockSize * Math.sin(30 * (Math.PI / 180)));
 
-        World.width = width;
-        World.height = height;
-        World._length = length;
+        this.width = width;
+        this.height = height;
+        this._length = length;
 
-        World.normalLength = (World._length + World.width) * World.dY;
-        World.normalHeight = (World._length + World.width) * World.dX;
+        this.normalLength = (this._length + this.width) * this.dY;
+        this.normalHeight = (this._length + this.width) * this.dX;
 
-        World.entrance = entrance;
+        this.entrance = entrance;
 
         this.name = name;
 
@@ -110,26 +102,27 @@ export class World {
             };
     }
 
-    static getBlockCenter({ i = 0, j = 0, k = 0 }) {
+    getBlockCenter({ i = 0, j = 0, k = 0 }) {
         if (
-            i > World._length - 1 ||
-            j > World.width - 1 ||
-            k > World.height - 1 ||
+            i > this.length - 1 ||
+            j > this.width - 1 ||
+            k > this.height - 1 ||
             i < 0 ||
             j < 0 ||
             k < 0
         )
             return this.getBlockCenter({});
         let p = { ...this.origin };
+
         //traverse length
-        p.x = p.x + i * World.dX;
-        p.y = p.y + i * World.dY;
+        p.x = p.x + i * this.dX;
+        p.y = p.y + i * this.dY;
         //traverse width
-        p.x = p.x - j * World.dX;
-        p.y = p.y + j * World.dY;
+        p.x = p.x - j * this.dX;
+        p.y = p.y + j * this.dY;
 
         //add dY
-        p.y = p.y + World.dY;
+        p.y = p.y + this.dY;
 
         return p;
     }
@@ -139,6 +132,8 @@ export class World {
             x: ctx.width / 2,
             y: ctx.height / 3 - blockSize / 2,
         };
+
+        //World.origin = { ...this.origin };
 
         let o = { ...this.origin };
 
@@ -151,9 +146,9 @@ export class World {
             ctx.drawImage(
                 this.floorImg,
                 0,
-                -World.normalHeight / 2,
-                World.dY * (this.length + this.width),
-                World.dX * (this.width + this.length),
+                -this.normalHeight / 2,
+                this.dY * (this.length + this.width),
+                this.dX * (this.width + this.length),
             );
             ctx.restore();
         }
@@ -162,11 +157,11 @@ export class World {
         if (this.left_wallLoaded) {
             ctx.save();
             ctx.translate(this.origin.x, this.origin.y);
-            let wp = World.dX * this.length;
+            let wp = this.dX * this.length;
             ctx.drawImage(
                 this.left_wallImg,
-                -World.dX * this.width,
-                -World.dY * this.length * 2,
+                -this.dX * this.width,
+                -this.dY * this.length * 2,
                 wp,
                 1.732 * wp,
                 // 2 * World.dY * this.height +
@@ -179,11 +174,11 @@ export class World {
         if (this.right_wallLoaded) {
             ctx.save();
             ctx.translate(this.origin.x, this.origin.y);
-            let wp = World.dX * this.length;
+            let wp = this.dX * this.length;
             ctx.drawImage(
                 this.right_wallImg,
                 -1,
-                -2 * World.dY * World._length,
+                -2 * this.dY * this._length,
                 wp,
                 1.732 * wp,
                 // 2 * World.dY * this.height +
@@ -201,9 +196,9 @@ export class World {
                 let dY = 1 * (1 * blockSize * Math.sin(30 * (Math.PI / 180)));
 
                 if (w === 0 && l === 0) {
-                    World.dX = dX;
-                    World.dY = dY;
-                    World.origin = this.origin;
+                    this.dX = dX;
+                    this.dY = dY;
+                    this.origin = this.origin;
                 }
 
                 let x1 = o.x + l * blockSize * Math.cos(30 * (Math.PI / 180));
