@@ -45,10 +45,12 @@ export class HitCanvas {
                 this.ctx.lineTo(paths[i].x, paths[i].y);
             }
             this.ctx.lineTo(paths[0].x, paths[0].y);
+
+            //render
             this.ctx.fillStyle = r;
-            //this.ctx.strokeStyle = r;
             this.ctx.fill();
             this.ctx.fillStyle = '#000000';
+            this.ctx.strokeStyle = r;
             this.ctx.stroke();
             this.ctx.strokeStyle = '#000000';
         }

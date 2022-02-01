@@ -1,5 +1,3 @@
-const blockSize = 45;
-
 const assetsPath = './src/assets';
 
 export class World {
@@ -22,8 +20,10 @@ export class World {
         this.height = height;
         this.entrance = entrance;
 
-        this.dX = 1 * (1 * blockSize * Math.cos(30 * (Math.PI / 180)));
-        this.dY = 1 * (1 * blockSize * Math.sin(30 * (Math.PI / 180)));
+        this.blockSize = 45;
+
+        this.dX = 1 * (1 * this.blockSize * Math.cos(30 * (Math.PI / 180)));
+        this.dY = 1 * (1 * this.blockSize * Math.sin(30 * (Math.PI / 180)));
 
         this.width = width;
         this.height = height;
@@ -130,7 +130,7 @@ export class World {
     render({ ctx = null, cameraOffsetX = 0, cameraOffsetY = 0 }) {
         this.origin = {
             x: ctx.width / 2,
-            y: ctx.height / 3 - blockSize / 2,
+            y: ctx.height / 3 - this.blockSize / 2,
         };
 
         //World.origin = { ...this.origin };
@@ -189,11 +189,14 @@ export class World {
 
         //draw floor cells
         let l = 0;
+        ctx.beginPath();
         for (let w = 0; w < this.length; w++) {
             for (l = 0; l < this.width; l++) {
                 //floorMesh
-                let dX = 1 * (1 * blockSize * Math.cos(30 * (Math.PI / 180)));
-                let dY = 1 * (1 * blockSize * Math.sin(30 * (Math.PI / 180)));
+                let dX =
+                    1 * (1 * this.blockSize * Math.cos(30 * (Math.PI / 180)));
+                let dY =
+                    1 * (1 * this.blockSize * Math.sin(30 * (Math.PI / 180)));
 
                 if (w === 0 && l === 0) {
                     this.dX = dX;
@@ -201,26 +204,27 @@ export class World {
                     this.origin = this.origin;
                 }
 
-                let x1 = o.x + l * blockSize * Math.cos(30 * (Math.PI / 180));
-                let y1 = o.y + l * blockSize * Math.sin(30 * (Math.PI / 180));
+                let x1 =
+                    o.x + l * this.blockSize * Math.cos(30 * (Math.PI / 180));
+                let y1 =
+                    o.y + l * this.blockSize * Math.sin(30 * (Math.PI / 180));
 
-                //top
                 if (this.drawMesh) {
-                    ctx.beginPath();
+                    //top
+                    ctx.moveTo(x1 + 3, y1);
                     ctx.arc(x1, y1, 3, 0, Math.PI * 2);
-                    ctx.stroke();
+
                     //right
-                    ctx.beginPath();
+                    ctx.moveTo(x1 + dX + 3, y1 + dY);
                     ctx.arc(x1 + dX, y1 + dY, 3, 0, Math.PI * 2);
-                    ctx.stroke();
+
                     //bottom
-                    ctx.beginPath();
+                    ctx.moveTo(x1 + 3, y1 + dY * 2);
                     ctx.arc(x1, y1 + dY * 2, 3, 0, Math.PI * 2);
-                    ctx.stroke();
+
                     //left
-                    ctx.beginPath();
+                    ctx.moveTo(x1 - dX + 3, y1 + dY);
                     ctx.arc(x1 - dX, y1 + dY, 3, 0, Math.PI * 2);
-                    ctx.stroke();
                 }
 
                 let paths = [
@@ -234,8 +238,11 @@ export class World {
                     type: 'world-surface',
                 });
             }
-            o.x = o.x - 1 * (1 * blockSize * Math.cos(30 * (Math.PI / 180)));
-            o.y = o.y + 1 * (1 * blockSize * Math.sin(30 * (Math.PI / 180)));
+            ctx.stroke();
+            o.x =
+                o.x - 1 * (1 * this.blockSize * Math.cos(30 * (Math.PI / 180)));
+            o.y =
+                o.y + 1 * (1 * this.blockSize * Math.sin(30 * (Math.PI / 180)));
         }
     }
 }
