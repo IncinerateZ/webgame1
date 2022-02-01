@@ -157,13 +157,17 @@ export default class Player extends Entity {
         let shadowRatio = images.shadow.height / images.shadow.width;
         let shadowHeight = world.dY / 1.55;
         let shadowWidth = shadowHeight / shadowRatio;
+        ctx.save();
+        ctx.translate(this.data.x, this.data.y);
+        if (!this.data.facingOrigin) ctx.scale(-1, 1);
         ctx.drawImage(
             images.shadow,
-            this.data.x - shadowWidth / 2,
-            this.data.y - shadowHeight / 2,
+            -shadowWidth / 2,
+            -shadowHeight / 2,
             shadowWidth,
             shadowHeight,
         );
+        ctx.restore();
 
         //leg right
         let legShadowRatio = images.legs.right.width / images.shadow.width;
@@ -172,7 +176,7 @@ export default class Player extends Entity {
         let legHeight = legWidth * legRatio;
         ctx.drawImage(
             images.legs.right,
-            this.data.x + legWidth / 4,
+            this.data.x + legWidth / 6,
             this.data.y - legHeight + 3,
             legWidth,
             legHeight,
@@ -216,7 +220,7 @@ export default class Player extends Entity {
         //leg left
         ctx.drawImage(
             images.legs.left,
-            this.data.x - (3 * legWidth) / 3.5,
+            this.data.x - (3 * legWidth) / 3.6,
             this.data.y - legHeight + 3,
             legWidth,
             legHeight,
@@ -292,6 +296,7 @@ export default class Player extends Entity {
             hairWidth,
             hairHeight,
         );
+        ctx.restore();
     }
 
     forceTeleport({ i = 0, j = 0, k = 0 }) {
